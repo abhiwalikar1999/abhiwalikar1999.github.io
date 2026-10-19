@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM-Based System Context Analysis Assistant · Abhishek Walikar</title>
+  <meta name="description" content="An LLM pipeline that turns a plain-English system description into a validated system-context model and three interactive graph views. Entity F1 0.88, relationship F1 0.82, 69 tests, Docker, CI/CD and a live demo.">
+  <meta name="author" content="Abhishek Ningappa Walikar">
+  <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="LLM-Based System Context Analysis Assistant">
+  <meta property="og:description" content="Structured LLM extraction, RAG and a LangGraph self-check loop, built evaluation-first. Entity F1 0.88, relationship F1 0.82.">
+  <!-- deploy:urls -->
+  <link rel="canonical" href="https://abhiwalikar1999.github.io/projects/llm-context-assistant/">
+  <meta property="og:url" content="https://abhiwalikar1999.github.io/projects/llm-context-assistant/">
+  <meta property="og:image" content="https://abhiwalikar1999.github.io/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /deploy:urls -->
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../../assets/fonts/ibm-plex-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}document.documentElement.classList.add('js')</script>
+  <script src="../../assets/js/main.js" defer></script>
+  <script src="../../assets/js/charts.js" defer></script>
+  <script src="../../assets/js/widgets.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Main">
+      <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">AW</span><span>Abhishek Walikar</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../../#about">About</a></li>
+        <li><a href="../../#projects">Projects</a></li>
+        <li><a href="../../#experience">Experience</a></li>
+        <li><a href="../../#skills">Skills</a></li>
+        <li><a href="../../#education">Education</a></li>
+        <li><a href="../../#contact">Contact</a></li>
+      </ul>
+      <div class="nav-tools">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="icon icon--stroke icon-moon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-moon"/></svg>
+          <svg class="icon icon--stroke icon-sun" aria-hidden="true"><use href="../../assets/img/icons.svg#i-sun"/></svg>
+        </button>
+        <a class="btn btn--sm nav-resume" href="../../assets/docs/Abhishek_Ningappa_Walikar_CV.pdf" download>Resume</a>
+        <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-menu"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div class="progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+    <header class="case-hero wrap">
+      <p class="breadcrumb"><a href="../../#projects"><svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-left"/></svg>All projects</a></p>
+      <p class="eyebrow">Project 01 · Applied LLM engineering</p>
+      <h1>LLM-Based System Context Analysis Assistant</h1>
+      <p class="case-sub">An LLM pipeline that reads a plain-English system description and returns a structured system-context model (actors, components, external systems, relationships, risks and assumptions) as validated JSON and three interactive graph views.</p>
+
+      <dl class="case-facts">
+        <div><dt>Role</dt><dd>Started as a 3-person course project, then I extended it on my own in 9 measured phases</dd></div>
+        <div><dt>Timeline</dt><dd>01/2025 – 04/2026</dd></div>
+        <div><dt>Context</dt><dd>Universität Paderborn, Data-Driven Engineering</dd></div>
+        <div><dt>Stack</dt><dd>Python · OpenAI SDK · Pydantic v2 · LangGraph · pytest · Docker · GitHub Actions · Render</dd></div>
+      </dl>
+
+      <div class="case-actions">
+        <a class="btn" href="https://context-graph-assistant.onrender.com" target="_blank" rel="noopener">Try the live demo
+          <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
+        <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/LLM-Based-System-Context-Analysis-Assistant" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
+      </div>
+      <p class="case-note">The demo is hosted on Render. If it has been idle, the first load takes about 20–30 seconds while it wakes up.</p>
+
+      <ul class="metrics case-metrics" aria-label="Key results">
+        <li class="metric"><span class="metric-value">0.88</span><span class="metric-label">Entity F1 (precision 0.96, recall 0.82)</span></li>
+        <li class="metric"><span class="metric-value">0.82</span><span class="metric-label">Relationship F1 (precision 0.81, recall 0.84)</span></li>
+        <li class="metric"><span class="metric-value">100%</span><span class="metric-label">Extracted items traced to a source sentence</span></li>
+        <li class="metric"><span class="metric-value">69</span><span class="metric-label">Tests in about a second, zero network calls</span></li>
+      </ul>
+    </header>
+
+    <div class="wrap case-layout">
+      <nav class="toc" aria-label="On this page">
+        <div class="toc-inner">
+          <p class="toc-title">On this page</p>
+          <ol>
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#built">What I built</a></li>
+            <li><a href="#evaluation">Evaluation</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#engineering">Engineering</a></li>
+            <li><a href="#lessons">Lessons learned</a></li>
+          </ol>
+        </div>
+      </nav>
+
+      <article class="prose">
+        <!-- Problem -->
+        <section id="problem" aria-labelledby="h-problem">
+          <h2 id="h-problem"><span class="section-num">01</span>Problem</h2>
+          <p class="lead">System-context diagrams show who uses a system, what it is made of, what it talks to and where the risks are. They are usually drawn by hand from requirement documents. That is slow, varies from person to person, and is hard to trace back to the text.</p>
+          <p>The goal was to extract a machine-readable context model from a plain-English description with an LLM, show it as interactive diagrams, and make every extracted item traceable to the sentence it came from.</p>
+          <p>The project began as a three-person coursework project in the Data-Driven Engineering course. I then extended it on my own in nine phases, each measured against the same evaluation harness.</p>
+          <div class="callout">
+            <span class="callout-label">The rule I kept throughout</span>
+            <p>Build the evaluation first. The hand-labelled harness existed before any pipeline change, so every later change (structured outputs, retrieval, an agentic loop, a model swap) has a number attached to it.</p>
+          </div>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture" aria-labelledby="h-architecture">
+          <h2 id="h-architecture"><span class="section-num">02</span>Architecture</h2>
+          <p>A request flows through these stages. Retrieval only switches on for long inputs, and the agentic self-check is an option rather than the default, for reasons shown in the results.</p>
+          <ol class="flow" aria-label="Pipeline stages">
+            <li>
+              <span class="flow-title">Input</span>
+              <span class="flow-desc">One or more system descriptions. Multiple documents are aggregated into one context model.</span>
+            </li>
+            <li>
+              <span class="flow-title">Retrieval <span class="flow-tag">above 350 words</span></span>
+              <span class="flow-desc">Chunk, embed (qwen3-embedding-4b), rank by cosine similarity and keep the top-K chunks for each of 6 extraction categories. Pure Python with no vector database, which is enough at this scale.</span>
+            </li>
+            <li>
+              <span class="flow-title">Structured extraction</span>
+              <span class="flow-desc">One LLM call constrained by a strict JSON schema (OpenAI Structured Outputs) instead of parsing free text.</span>
+            </li>
+            <li>
+              <span class="flow-title">Validation and repair</span>
+              <span class="flow-desc">Pydantic v2 schema plus a cross-field referential-integrity validator that catches dangling entity references. On failure, up to 3 retries that feed the model its own error.</span>
+            </li>
+            <li>
+              <span class="flow-title">Post-processing</span>
+              <span class="flow-desc">Deduplication, relationship labels normalised to 7 canonical verbs, and an evidence sentence attached to every entity, relationship, risk and assumption.</span>
+            </li>
+            <li>
+              <span class="flow-title">Rule-based enrichment <span class="flow-tag">deterministic</span></span>
+              <span class="flow-desc">Adds functional and non-functional requirements, security and governance controls and operational components, and links risks to the controls that mitigate them. It is hand-tuned to the hospital reference scenario, so it only runs when the input matches that scenario. Any other input gets the LLM's extraction alone.</span>
+            </li>
+            <li>
+              <span class="flow-title">Output</span>
+              <span class="flow-desc">JSON context model plus three interactive views (pyvis / vis-network): context and architecture, risk traceability, governance and requirements.</span>
+            </li>
+            <li class="is-optional">
+              <span class="flow-title">LangGraph self-check <span class="flow-tag">optional</span></span>
+              <span class="flow-desc">A state machine: extract → critique → repair → critique, capped at 3 rounds. Measured, then kept off the default path.</span>
+            </li>
+          </ol>
+          <p>The web app is served by Python's standard-library <code>http.server</code>. There's no web framework, by design: the app needs a handful of routes, not a framework's worth of dependencies.</p>
+          <figure class="shot">
+            <div class="shot-bar">context-graph-assistant.onrender.com/example_output/risk_overlay.html</div>
+            <div class="shot-img shot-img--crop">
+              <img src="../../assets/img/projects/llm-risk-overlay.webp" width="940" height="1110" loading="lazy" decoding="async"
+                   alt="Risk-traceability graph from the live demo: actors in green, internal components in blue, external systems in red and risks in orange, with arrows linking each risk to the components it affects.">
+            </div>
+            <figcaption>Risk-traceability view from the live demo, pre-generated for the hospital EEG/ECG monitoring scenario. It combines the LLM's extraction with the rule-based layer, which adds the operational and governance nodes. Actors are green, components blue, external systems red and risks orange.</figcaption>
+          </figure>
+        </section>
+
+        <!-- What I built -->
+        <section id="built" aria-labelledby="h-built">
+          <h2 id="h-built"><span class="section-num">03</span>What I built, phase by phase</h2>
+          <p>Each phase had one goal and one measurement. Open a phase for the details.</p>
+          <div class="phases">
+            <details>
+              <summary><span class="ph">Phase 0</span>Reproduce and verify<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Fixed a Python 3.13 incompatibility (the standard-library <code>cgi</code> module was removed) by writing a custom multipart form parser.</li>
+                  <li>Found and fixed a double-HTTP-response bug that corrupted server responses whenever the LLM call failed.</li>
+                  <li>Verified the whole pipeline end to end against a real, live LLM call.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 1</span>Evaluation harness<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Designed and hand-labelled 5 test cases across 5 deliberately different domains.</li>
+                  <li>Wrote the scoring: fuzzy entity matching (token-Jaccard similarity with type gating), relationship-pair matching and coverage matching for risks and assumptions.</li>
+                  <li>Found and fixed a tokenizer bug in the harness itself ("Wi-Fi" vs "wifi") that produced false negatives.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 2</span>Reliable structured outputs<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Replaced regex-based "brace-hunting" JSON extraction with schema-constrained structured outputs.</li>
+                  <li>Designed a Pydantic schema with a custom cross-field referential-integrity validator.</li>
+                  <li>Added an automatic retry and repair loop (up to 3 attempts) that feeds the model its own error.</li>
+                  <li>Checked live that the API gateway actually supported structured outputs before building on it.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 3</span>Evidence and label normalisation<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Added an evidence field: every extracted item points to the sentence it came from.</li>
+                  <li>Built a lookup of 7 canonical relationship verbs, derived from 41 labels actually observed in earlier runs.</li>
+                  <li>Added two metrics for these features: evidence-grounded rate and label-normalisation coverage.</li>
+                  <li>Disproved my own first hypothesis about a score change with data and corrected the write-up.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 4</span>Retrieval (RAG) and multi-document input<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Built retrieval from scratch: chunking, embeddings, cosine ranking and top-K selection across 6 extraction categories.</li>
+                  <li>Calibrated the 350-word activation threshold from measured eval-case data instead of guessing it.</li>
+                  <li>Added multi-document upload and a 6th evaluation case: 3 documents, 431 words.</li>
+                  <li>Tested the retrieval filter in isolation with synthetic, mocked embeddings.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 5</span>Agentic self-validation (LangGraph)<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Implemented a LangGraph state machine with a 3-round safety cap.</li>
+                  <li>The critique checks three named issue types: missing actors, invented relationships and contradictions.</li>
+                  <li>Measured both the gain and the cost, and decided from that data not to make it the default.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 6</span>Model comparison<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Benchmarked the default ~30B mixture-of-experts model against an 8B model on the same gateway, measuring quality, latency and tokens together.</li>
+                  <li>Root-caused the smaller model's failure by inspecting outputs: a schema-filling failure on complex extraction, not a general inability.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 7</span>Testing<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>A pytest suite across 5 files (65 tests at the time, 69 now), with no network access thanks to monkeypatching.</li>
+                  <li>Pinned every dependency to the exact tested version.</li>
+                  <li>A failing test exposed an undocumented edge case in the production deduplication logic.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 8</span>Docker, CI/CD and deployment<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Containerised the app and built a 2-job GitHub Actions pipeline: test suite, then a real Docker build with a running-container smoke test.</li>
+                  <li>Deployed to Render with Infrastructure-as-Code (a <code>render.yaml</code> Blueprint), configured through environment variables.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Phase 9</span>Documentation<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Rewrote the README as a five-minute read: problem, approach, results, how to run it.</li>
+                  <li>Kept the full methodology and the honest results, including corrected mistakes.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+        </section>
+
+        <!-- Evaluation -->
+        <section id="evaluation" aria-labelledby="h-evaluation">
+          <h2 id="h-evaluation"><span class="section-num">04</span>Evaluation</h2>
+          <p>Six hand-labelled cases across deliberately different domains: healthcare, e-commerce, IoT, fintech and logistics, plus a three-document ride-sharing case for multi-document input.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">What is scored</th><th scope="col">How</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Entities</th><td>Fuzzy matching: token-Jaccard similarity, gated by entity type</td></tr>
+                <tr><th scope="row">Relationships</th><td>Pair matching between source and target entities</td></tr>
+                <tr><th scope="row">Risks, assumptions</th><td>Free-text coverage matching</td></tr>
+                <tr><th scope="row">Evidence</th><td>Share of items that trace to a real source sentence</td></tr>
+                <tr><th scope="row">Label normalisation</th><td>Share of relationship labels mapped to a canonical verb</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The harness scores the LLM's own extraction, before the rule-based enrichment runs. That keeps the numbers about what the model itself gets right, separate from the hand-tuned rules for the hospital scenario.</p>
+          <div class="callout">
+            <span class="callout-label">The harness had bugs too</span>
+            <p>A hyphenation issue in the tokenizer ("Wi-Fi" vs "wifi") was producing false negatives. I found and fixed it, so the scores reflect the pipeline rather than the scorer.</p>
+          </div>
+        </section>
+
+        <!-- Results -->
+        <section id="results" aria-labelledby="h-results">
+          <h2 id="h-results"><span class="section-num">05</span>Results</h2>
+          <h3>Extraction quality</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <caption>Baseline pipeline across the six hand-labelled cases.</caption>
+              <thead><tr><th scope="col">Measure</th><th scope="col" class="num">Precision</th><th scope="col" class="num">Recall</th><th scope="col" class="num">F1</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Entities</th><td class="num">0.96</td><td class="num">0.82</td><td class="num">0.88</td></tr>
+                <tr><th scope="row">Relationships</th><td class="num">0.81</td><td class="num">0.84</td><td class="num">0.82</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">Measure</th><th scope="col" class="num">Value</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Risk coverage</th><td class="num">94%</td></tr>
+                <tr><th scope="row">Assumption coverage</th><td class="num">100%</td></tr>
+                <tr><th scope="row">Evidence-grounded items</th><td class="num">100%</td></tr>
+                <tr><th scope="row">Relationship labels mapped to a canonical verb</th><td class="num">47–67%</td></tr>
+                <tr><th scope="row">Parse failures after structured outputs</th><td class="num">eliminated</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>Agentic self-check: better, at a price</h3>
+          <ul class="metrics" aria-label="Agentic self-check results">
+            <li class="metric"><span class="metric-value">0.879 <span class="arrow">→</span> 0.924</span><span class="metric-label">Entity F1 (+0.045)</span></li>
+            <li class="metric"><span class="metric-value">+0.004</span><span class="metric-label">Relationship F1, within noise</span></li>
+            <li class="metric"><span class="metric-value">4.7×</span><span class="metric-label">More LLM calls per analysis on average</span></li>
+            <li class="metric"><span class="metric-value">8 <small>calls</small> · 327 <small>s</small></span><span class="metric-label">Worst case for a single analysis</span></li>
+          </ul>
+          <p style="margin-top:20px">The gain is real and traceable: every repaired case added back an actor that the first pass had missed. But 4.7× the calls for +0.045 entity F1 and a flat relationship score didn't justify making it the default. It stays available as an option.</p>
+
+          <div class="widget" data-widget="loop">
+            <div class="widget-head">
+              <span class="chart-title">The self-check loop, step by step</span>
+              <span class="widget-badge">simulation of the control flow</span>
+            </div>
+            <div class="widget-body">
+              <div class="loop-controls">
+                <div class="seg" role="group" aria-label="Scenario">
+                  <button type="button" data-scenario="clean" aria-pressed="false">No issues</button>
+                  <button type="button" data-scenario="one" aria-pressed="true">One repair</button>
+                  <button type="button" data-scenario="cap" aria-pressed="false">Hits the cap</button>
+                </div>
+                <button class="btn btn--sm" type="button" data-run>
+                  <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-play"/></svg>Run
+                </button>
+              </div>
+              <div class="loop">
+                <div>
+                  <div class="loop-graph" aria-hidden="true">
+                    <div class="node node--extract" data-node="extract">extract<small>draft the model</small></div>
+                    <div class="node node--critique" data-node="critique">critique<small>3 checks</small></div>
+                    <div class="node node--end" data-node="end">end<small>return model</small></div>
+                    <div class="node node--repair" data-node="repair">repair<small>fix issues</small></div>
+                  </div>
+                  <div class="loop-counter">
+                    <div><span>LLM calls</span><strong data-calls>0</strong></div>
+                    <div><span>Repair rounds</span><strong data-rounds>0 / 3</strong></div>
+                  </div>
+                </div>
+                <ol class="loop-log" aria-live="polite" data-log>
+                  <li class="empty">Pick a scenario and press Run.</li>
+                </ol>
+              </div>
+            </div>
+            <p class="widget-foot">The critique looks for missing actors, invented relationships and contradictions. Worst case: 1 extract + 1 critique + 3 × (repair + critique) = 8 calls.</p>
+          </div>
+
+          <h3>Model comparison: faster isn't the same as usable</h3>
+          <p>I benchmarked the default model, a ~30B-parameter mixture-of-experts, against a smaller 8B model on the same API gateway and the same six cases.</p>
+          <div class="chart-group">
+            <span class="chart-title">Default vs smaller model, same gateway, same six cases</span>
+            <span class="chart-sub">The 8B model was 4.6× faster at about the same token cost, and produced no usable output.</span>
+            <ul class="legend" style="margin-top:12px">
+              <li><span class="swatch swatch--bar" style="background:var(--series-1)"></span>~30B MoE (default)</li>
+              <li><span class="swatch swatch--bar" style="background:var(--series-2)"></span>8B (alternative)</li>
+            </ul>
+            <div class="chart-grid chart-grid--2">
+              <figure class="chart" data-chart="bars" data-colors="series-1,series-2" data-labels="above" data-decimals="1" data-unit=" s" data-tick-decimals="0">
+                <figcaption><span class="chart-title">Average latency</span><span class="chart-sub">seconds, lower is better</span></figcaption>
+                <div class="table-wrap"><table class="data-table">
+                  <thead><tr><th scope="col">Model</th><th scope="col" class="num">Latency</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">~30B MoE (default)</th><td class="num">42.4 s</td></tr>
+                    <tr><th scope="row">8B (alternative)</th><td class="num">9.2 s</td></tr>
+                  </tbody>
+                </table></div>
+              </figure>
+              <figure class="chart" data-chart="bars" data-colors="series-1,series-2" data-labels="above" data-ticks="0,1000,2000">
+                <figcaption><span class="chart-title">Average tokens per analysis</span><span class="chart-sub">about equal</span></figcaption>
+                <div class="table-wrap"><table class="data-table">
+                  <thead><tr><th scope="col">Model</th><th scope="col" class="num">Tokens</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">~30B MoE (default)</th><td class="num">1,831</td></tr>
+                    <tr><th scope="row">8B (alternative)</th><td class="num">1,861</td></tr>
+                  </tbody>
+                </table></div>
+              </figure>
+              <figure class="chart" data-chart="bars" data-colors="series-1,series-2" data-labels="above" data-min="0" data-max="1" data-ticks="0,0.5,1" data-tick-decimals="1">
+                <figcaption><span class="chart-title">Entity F1</span><span class="chart-sub">higher is better</span></figcaption>
+                <div class="table-wrap"><table class="data-table">
+                  <thead><tr><th scope="col">Model</th><th scope="col" class="num">Entity F1</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">~30B MoE (default)</th><td class="num">0.88</td></tr>
+                    <tr><th scope="row">8B (alternative)</th><td class="num">0.00</td></tr>
+                  </tbody>
+                </table></div>
+              </figure>
+              <figure class="chart" data-chart="bars" data-colors="series-1,series-2" data-labels="above" data-min="0" data-max="1" data-ticks="0,0.5,1" data-tick-decimals="1">
+                <figcaption><span class="chart-title">Relationship F1</span><span class="chart-sub">higher is better</span></figcaption>
+                <div class="table-wrap"><table class="data-table">
+                  <thead><tr><th scope="col">Model</th><th scope="col" class="num">Relationship F1</th></tr></thead>
+                  <tbody>
+                    <tr><th scope="row">~30B MoE (default)</th><td class="num">0.82</td></tr>
+                    <tr><th scope="row">8B (alternative)</th><td class="num">0.00</td></tr>
+                  </tbody>
+                </table></div>
+              </figure>
+            </div>
+            <p class="chart-note">Default-model F1 is the baseline from the same harness. The 8B model's structured output was unusable in all six cases, even though a one-sentence manual test had looked fine.</p>
+          </div>
+        </section>
+
+        <!-- Engineering -->
+        <section id="engineering" aria-labelledby="h-engineering">
+          <h2 id="h-engineering"><span class="section-num">06</span>Engineering</h2>
+          <ul>
+            <li><strong>69 pytest tests</strong> across 5 files: deduplication, graph canonicalisation, scoring functions, schema validation, agentic-loop routing and the scenario gate of the enrichment layer. The suite runs in about a second with zero network calls.</li>
+            <li><strong>CI/CD:</strong> two GitHub Actions jobs on every push. One runs the tests, and the other builds the Docker image and smoke-tests the running container.</li>
+            <li><strong>Deployment:</strong> Render, defined as code in a <code>render.yaml</code> Blueprint, with host and port taken from environment variables.</li>
+            <li><strong>Reproducibility:</strong> every dependency pinned to the exact tested version.</li>
+            <li><strong>Fixes along the way:</strong> a custom multipart parser after Python 3.13 removed <code>cgi</code>, and a double-HTTP-response bug that corrupted responses when the LLM call failed.</li>
+          </ul>
+          <div class="callout">
+            <span class="callout-label">An honest demo</span>
+            <p>The LLM gateway is only reachable through the university VPN, so the public demo can't call it. Instead of faking a live call, the deployment bundles real, pre-generated outputs. What you see in the demo is genuine pipeline output.</p>
+          </div>
+        </section>
+
+        <!-- Lessons -->
+        <section id="lessons" aria-labelledby="h-lessons">
+          <h2 id="h-lessons"><span class="section-num">07</span>Lessons learned</h2>
+          <ul class="lessons">
+            <li>
+              <h3>Build the measuring stick first</h3>
+              <p>With the harness in place before any change, each phase could be judged by a number instead of an impression.</p>
+            </li>
+            <li>
+              <h3>Check reliability, not only speed and cost</h3>
+              <p>The 8B model looked like an easy win: 4.6× faster at equal token cost. Only the harness showed that it produced nothing usable.</p>
+            </li>
+            <li>
+              <h3>Every improvement has a price</h3>
+              <p>The self-check loop improved entity F1, but at 4.7× the calls. Measuring both sides made the default-path decision straightforward.</p>
+            </li>
+            <li>
+              <h3>Verify capabilities before building on them</h3>
+              <p>I tested that the gateway supported structured outputs and embeddings before writing code that depended on them.</p>
+            </li>
+            <li>
+              <h3>Your own tooling can be wrong</h3>
+              <p>Fixing a bug in the harness, and correcting a hypothesis the data didn't support, is what made the final numbers trustworthy.</p>
+            </li>
+          </ul>
+          <div class="case-actions">
+            <a class="btn" href="https://context-graph-assistant.onrender.com" target="_blank" rel="noopener">Try the live demo
+              <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
+            <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/LLM-Based-System-Context-Analysis-Assistant" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <nav class="wrap case-pager" aria-label="More projects">
+      <a class="pager-link" href="../machine-unlearning/"><span>← Previous project</span><strong>Machine Unlearning for Face Recognition</strong></a>
+      <a class="pager-link pager-link--next" href="../explainable-kg-classification/"><span>Next project →</span><strong>Explainable Knowledge-Graph Classification</strong></a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span data-year>2026</span> Abhishek Ningappa Walikar</p>
+      <p><a href="../../#contact">Get in touch</a> · <a href="../../">Back to home</a></p>
+    </div>
+  </footer>
+</body>
+</html>
