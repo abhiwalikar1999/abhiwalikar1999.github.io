@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Machine Unlearning for Face Recognition · Abhishek Walikar</title>
+  <meta name="description" content="Research project on verifying machine unlearning in face recognition with an Adversarial Forget Score (AFS). 5.82M images, 3 unlearning methods and 7 models, with runtime cut by 43%.">
+  <meta name="author" content="Abhishek Ningappa Walikar">
+  <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Machine Unlearning for Face Recognition">
+  <meta property="og:description" content="Checking whether a face recognition model has really forgotten someone, with an Adversarial Forget Score. 5.82M images, 3 methods, 7 models.">
+  <!-- deploy:urls -->
+  <link rel="canonical" href="https://abhiwalikar1999.github.io/projects/machine-unlearning/">
+  <meta property="og:url" content="https://abhiwalikar1999.github.io/projects/machine-unlearning/">
+  <meta property="og:image" content="https://abhiwalikar1999.github.io/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /deploy:urls -->
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../../assets/fonts/ibm-plex-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}document.documentElement.classList.add('js')</script>
+  <script src="../../assets/js/main.js" defer></script>
+  <script src="../../assets/js/charts.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Main">
+      <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">AW</span><span>Abhishek Walikar</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../../#about">About</a></li>
+        <li><a href="../../#projects">Projects</a></li>
+        <li><a href="../../#experience">Experience</a></li>
+        <li><a href="../../#skills">Skills</a></li>
+        <li><a href="../../#education">Education</a></li>
+        <li><a href="../../#contact">Contact</a></li>
+      </ul>
+      <div class="nav-tools">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="icon icon--stroke icon-moon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-moon"/></svg>
+          <svg class="icon icon--stroke icon-sun" aria-hidden="true"><use href="../../assets/img/icons.svg#i-sun"/></svg>
+        </button>
+        <a class="btn btn--sm nav-resume" href="../../assets/docs/Abhishek_Ningappa_Walikar_CV.pdf" download>Resume</a>
+        <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-menu"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div class="progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+    <header class="case-hero wrap">
+      <p class="breadcrumb"><a href="../../#projects"><svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-left"/></svg>All projects</a></p>
+      <p class="eyebrow">Project 03 · Research · Deep learning &amp; computer vision</p>
+      <h1>Machine Unlearning for Face Recognition</h1>
+      <p class="case-sub">How do you check that a face recognition model has really forgotten someone? In a team of three, we developed a new evaluation score for machine unlearning and tested it across three unlearning methods, seven face recognition models and 5.8 million images.</p>
+
+      <dl class="case-facts">
+        <div><dt>Team</dt><dd>Abhishek Walikar, Subarna Guin, Vedant Vallakati</dd></div>
+        <div><dt>My part</dt><dd>Co-developed the evaluation score and tuned its search settings, cutting runtime by 43%</dd></div>
+        <div><dt>Timeline</dt><dd>10/2025 – 08/2026, Universität Paderborn</dd></div>
+        <div><dt>Stack</dt><dd>PyTorch · ArcFace · AdaFace · DQMFace · NVIDIA H100</dd></div>
+      </dl>
+      <p class="case-note">This is university research, so the method, report and code aren't public. I'm happy to talk about the project in an interview, within what I'm allowed to share.</p>
+
+      <ul class="metrics case-metrics" aria-label="Key results">
+        <li class="metric"><span class="metric-value">5.82M</span><span class="metric-label">Face images in MS1M-V2</span></li>
+        <li class="metric"><span class="metric-value">3 <small>×</small> 7</span><span class="metric-label">Unlearning methods × face recognition models</span></li>
+        <li class="metric"><span class="metric-value">40 / 41</span><span class="metric-label">RAD configurations where AFS separated more strongly than FS</span></li>
+        <li class="metric"><span class="metric-value">−43%</span><span class="metric-label">Runtime, 1,215 s → 690 s, score change &lt; 0.001</span></li>
+      </ul>
+    </header>
+
+    <div class="wrap case-layout">
+      <nav class="toc" aria-label="On this page">
+        <div class="toc-inner">
+          <p class="toc-title">On this page</p>
+          <ol>
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#setup">Experimental setup</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#runtime">Runtime tuning</a></li>
+            <li><a href="#lessons">Lessons learned</a></li>
+          </ol>
+        </div>
+      </nav>
+
+      <article class="prose">
+        <!-- Problem -->
+        <section id="problem" aria-labelledby="h-problem">
+          <h2 id="h-problem"><span class="section-num">01</span>Problem</h2>
+          <p class="lead">Under Article 17 of the GDPR, people can ask for their personal data to be erased. Deleting the records doesn't remove their influence on a trained model, and retraining after every request is expensive.</p>
+          <p>Machine unlearning edits the trained model instead, which raises the question of how to verify that it worked. In face recognition this is hard: models map faces to embeddings, and aggregate accuracy can hide what actually changed for the forgotten identities.</p>
+          <p>An existing measure, the Forget Score (FS), compares the model's embeddings before and after unlearning. We developed a new score, the Adversarial Forget Score (AFS), and measured whether it separates forgotten from retained identities more clearly.</p>
+        </section>
+
+        <!-- Setup -->
+        <section id="setup" aria-labelledby="h-setup">
+          <h2 id="h-setup"><span class="section-num">02</span>Experimental setup</h2>
+          <div class="table-wrap">
+            <table class="data-table">
+              <tbody>
+                <tr><th scope="row">Dataset</th><td>MS1M-V2, 5,822,653 face images. Scores are computed on a fixed sample of 10,000 retained images.</td></tr>
+                <tr><th scope="row">Models (7)</th><td>ArcFace 18 / 50 / 100, AdaFace 18 / 50 / 100, DQMFace 100</td></tr>
+                <tr><th scope="row">RAD</th><td>One identity forgotten at a time, averaged over five identities, with sampling sizes from 10 images up to the full retain set.</td></tr>
+                <tr><th scope="row">UCE and SVD</th><td>Applied to linearised models, with 1 to 1,000 identities forgotten jointly.</td></tr>
+                <tr><th scope="row">Baseline</th><td>Forget Score (FS), computed on the same identities and samples.</td></tr>
+                <tr><th scope="row">Compute</th><td>NVIDIA H100</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Results -->
+        <section id="results" aria-labelledby="h-results">
+          <h2 id="h-results"><span class="section-num">03</span>Results</h2>
+          <p>AFS exceeded FS in <strong>40 of the 41</strong> completed RAD configurations. The one exception was DQMFace100 with only 10 sampled images (AFS 0.805 vs FS 0.831). At a sampling size of 10,000, AFS also rose with backbone depth for both ArcFace and AdaFace.</p>
+
+          <figure class="chart" data-chart="dumbbell" data-min="0.75" data-max="0.95" data-ticks="0.75,0.8,0.85,0.9,0.95" data-decimals="3" data-tick-decimals="2" data-delta-unit="" data-delta-decimals="3" data-colors="series-muted,series-1">
+            <figcaption>
+              <span class="chart-title">AFS separates forget and retain sets more strongly than FS</span>
+              <span class="chart-sub">RAD, single-identity forgetting, 10,000 sampled images, averaged over five forgotten identities</span>
+            </figcaption>
+            <div class="table-wrap"><table class="data-table">
+              <thead><tr><th scope="col">Model</th><th scope="col" class="num">Forget Score (FS)</th><th scope="col" class="num">Adversarial Forget Score (AFS)</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">ArcFace18</th><td class="num">0.818</td><td class="num">0.859</td></tr>
+                <tr><th scope="row">ArcFace50</th><td class="num">0.811</td><td class="num">0.867</td></tr>
+                <tr><th scope="row">ArcFace100</th><td class="num">0.822</td><td class="num">0.892</td></tr>
+                <tr><th scope="row">AdaFace18</th><td class="num">0.802</td><td class="num">0.867</td></tr>
+                <tr><th scope="row">AdaFace50</th><td class="num">0.845</td><td class="num">0.885</td></tr>
+                <tr><th scope="row">AdaFace100</th><td class="num">0.854</td><td class="num">0.900</td></tr>
+                <tr><th scope="row">DQMFace100</th><td class="num">0.875</td><td class="num">0.928</td></tr>
+              </tbody>
+            </table></div>
+          </figure>
+
+          <div class="callout">
+            <span class="callout-label">Accuracy alone isn't enough</span>
+            <p>Under RAD, forget-set accuracy stayed between 99.37% and 100% for ArcFace and AdaFace, while both scores showed substantial changes in the representations. The scores and accuracy measure different effects, so they have to be read together.</p>
+          </div>
+
+          <h3>Where the two scores disagree</h3>
+          <p>When identities are forgotten jointly with UCE and SVD, both scores saturate at 1.000 for small requests. For large requests they can diverge sharply, especially for UCE on ArcFace:</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">Configuration</th><th scope="col" class="num">Forget acc.</th><th scope="col" class="num">FS</th><th scope="col" class="num">AFS</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">ArcFace50, UCE, 500 identities</th><td class="num">49.79%</td><td class="num">0.804</td><td class="num">0.171</td></tr>
+                <tr><th scope="row">ArcFace50, UCE, 1,000 identities</th><td class="num">73.95%</td><td class="num">0.616</td><td class="num">0.043</td></tr>
+                <tr><th scope="row">ArcFace100, UCE, 1,000 identities</th><td class="num">94.05%</td><td class="num">0.679</td><td class="num">0.303</td></tr>
+                <tr><th scope="row">AdaFace50, SVD, 1,000 identities</th><td class="num">80.43%</td><td class="num">0.261</td><td class="num">0.481</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>These cases flag where to look rather than explain why. Per-identity analysis would be needed to find which identities cause the disagreement.</p>
+        </section>
+
+        <!-- Runtime -->
+        <section id="runtime" aria-labelledby="h-runtime">
+          <h2 id="h-runtime"><span class="section-num">04</span>Runtime tuning</h2>
+          <p>The score has a search setting, K, and the runtime of a full experiment grows with it. We started from the value used in prior work (K = 10), and I measured what each setting actually buys before we picked one.</p>
+
+          <figure class="chart" data-chart="columns" data-annotate="1" data-highlight="K = 5" data-unit=" s" data-ticks="0,400,800,1200" data-highlight-note="Chosen setting">
+            <figcaption>
+              <span class="chart-title">Halving K nearly halves the runtime, and the score barely moves</span>
+              <span class="chart-sub">Full-run wall-clock time by search setting K (ArcFace50, RAD, averaged over five identities)</span>
+            </figcaption>
+            <div class="table-wrap"><table class="data-table">
+              <thead><tr><th scope="col">Setting</th><th scope="col" class="num">Runtime</th><th scope="col" class="num">AFS</th></tr></thead>
+              <tbody>
+                <tr><th scope="row" data-short="K=1">K = 1</th><td class="num">602.4 s</td><td class="num">0.886</td></tr>
+                <tr><th scope="row" data-short="K=3">K = 3</th><td class="num">592.0 s</td><td class="num">0.869</td></tr>
+                <tr><th scope="row" data-short="K=5">K = 5</th><td class="num">690.3 s</td><td class="num">0.867</td></tr>
+                <tr><th scope="row" data-short="K=7">K = 7</th><td class="num">706.8 s</td><td class="num">0.872</td></tr>
+                <tr><th scope="row" data-short="K=10">K = 10</th><td class="num">1,215.1 s</td><td class="num">0.868</td></tr>
+              </tbody>
+            </table></div>
+          </figure>
+
+          <ul>
+            <li><strong>K = 10 → 5</strong> cut a full run from 1,215 s to 690 s (−43%), while AFS changed by less than 0.001 (0.8681 → 0.8674).</li>
+            <li><strong>K = 1</strong> was fast too and scored slightly higher, but it explores too little to be a reliable setting.</li>
+            <li><strong>K = 5</strong> balanced cost and coverage, and it held up across all of our experiments.</li>
+          </ul>
+        </section>
+
+        <!-- Lessons -->
+        <section id="lessons" aria-labelledby="h-lessons">
+          <h2 id="h-lessons"><span class="section-num">05</span>Lessons learned</h2>
+          <ul class="lessons">
+            <li>
+              <h3>Accuracy can hide representation change</h3>
+              <p>Forget accuracy near 100% next to large embedding shifts showed why evaluation has to look inside the model, not only at its outputs.</p>
+            </li>
+            <li>
+              <h3>Cost is a design parameter</h3>
+              <p>The same score at roughly half the runtime came from measuring the trade-off rather than copying the default from prior work.</p>
+            </li>
+            <li>
+              <h3>A score is a lens, not a proof</h3>
+              <p>Where FS and AFS disagree, the disagreement itself is the finding. It points to configurations that need closer, per-identity analysis.</p>
+            </li>
+          </ul>
+        </section>
+      </article>
+    </div>
+
+    <nav class="wrap case-pager" aria-label="More projects">
+      <a class="pager-link" href="../explainable-kg-classification/"><span>← Previous project</span><strong>Explainable Knowledge-Graph Classification</strong></a>
+      <a class="pager-link pager-link--next" href="../llm-context-assistant/"><span>Next project →</span><strong>LLM-Based System Context Analysis Assistant</strong></a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span data-year>2026</span> Abhishek Ningappa Walikar</p>
+      <p><a href="../../#contact">Get in touch</a> · <a href="../../">Back to home</a></p>
+    </div>
+  </footer>
+</body>
+</html>

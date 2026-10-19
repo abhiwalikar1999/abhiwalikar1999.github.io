@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Explainable Knowledge-Graph Classification · Abhishek Walikar</title>
+  <meta name="description" content="Audit and rebuild of an explainable classifier on the AIFB knowledge graph: label leakage removed, nested cross-validation, readable graph features. Decision tree 63.4% → 86.2%, LightGBM 89.8% nested CV.">
+  <meta name="author" content="Abhishek Ningappa Walikar">
+  <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Explainable Knowledge-Graph Classification">
+  <meta property="og:description" content="Leakage-safe, explainable classification on the AIFB knowledge graph. Interpretable decision tree 63.4% → 86.2% nested CV, LightGBM 89.8%.">
+  <!-- deploy:urls -->
+  <link rel="canonical" href="https://abhiwalikar1999.github.io/projects/explainable-kg-classification/">
+  <meta property="og:url" content="https://abhiwalikar1999.github.io/projects/explainable-kg-classification/">
+  <meta property="og:image" content="https://abhiwalikar1999.github.io/assets/img/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- /deploy:urls -->
+  <link rel="icon" href="../../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="../../assets/fonts/ibm-plex-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}document.documentElement.classList.add('js')</script>
+  <script src="../../assets/js/main.js" defer></script>
+  <script src="../../assets/js/charts.js" defer></script>
+  <script src="../../assets/js/widgets.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="wrap nav" aria-label="Main">
+      <a class="brand" href="../../"><span class="brand-mark" aria-hidden="true">AW</span><span>Abhishek Walikar</span></a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../../#about">About</a></li>
+        <li><a href="../../#projects">Projects</a></li>
+        <li><a href="../../#experience">Experience</a></li>
+        <li><a href="../../#skills">Skills</a></li>
+        <li><a href="../../#education">Education</a></li>
+        <li><a href="../../#contact">Contact</a></li>
+      </ul>
+      <div class="nav-tools">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle colour theme">
+          <svg class="icon icon--stroke icon-moon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-moon"/></svg>
+          <svg class="icon icon--stroke icon-sun" aria-hidden="true"><use href="../../assets/img/icons.svg#i-sun"/></svg>
+        </button>
+        <a class="btn btn--sm nav-resume" href="../../assets/docs/Abhishek_Ningappa_Walikar_CV.pdf" download>Resume</a>
+        <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-menu"/></svg>
+        </button>
+      </div>
+    </nav>
+    <div class="progress" aria-hidden="true"></div>
+  </header>
+
+  <main id="main">
+    <header class="case-hero wrap">
+      <p class="breadcrumb"><a href="../../#projects"><svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-left"/></svg>All projects</a></p>
+      <p class="eyebrow">Project 02 · Machine learning &amp; explainable AI</p>
+      <h1>Explainable Knowledge-Graph Classification</h1>
+      <p class="case-sub">Predicting which of four research groups a researcher belongs to from the AIFB knowledge graph, and explaining every prediction. Most of the work was making the evaluation trustworthy first, then making the interpretable model good.</p>
+
+      <dl class="case-facts">
+        <div><dt>Role</dt><dd>Audit and rebuild of a course mini-project pipeline</dd></div>
+        <div><dt>Timeline</dt><dd>04/2026 – 10/2026</dd></div>
+        <div><dt>Data</dt><dd>AIFB knowledge graph: 8,285 nodes, 29,043 RDF triples, 176 labelled persons</dd></div>
+        <div><dt>Stack</dt><dd>Python · LightGBM · scikit-learn · SHAP · PyTorch Geometric · Streamlit · Docker</dd></div>
+      </dl>
+
+      <div class="case-actions">
+        <a class="btn" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
+          <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
+      </div>
+
+      <ul class="metrics case-metrics" aria-label="Key results">
+        <li class="metric"><span class="metric-value">89.8%</span><span class="metric-label">Nested-CV accuracy, LightGBM (91.7% on test)</span></li>
+        <li class="metric"><span class="metric-value">63.4% <span class="arrow">→</span> 86.2%</span><span class="metric-label">Interpretable decision tree, nested CV</span></li>
+        <li class="metric"><span class="metric-value">79</span><span class="metric-label">Label-leakage triples removed</span></li>
+        <li class="metric"><span class="metric-value">45 <small>+ 5</small></span><span class="metric-label">Unit tests + model-quality gate in CI</span></li>
+      </ul>
+    </header>
+
+    <div class="wrap case-layout">
+      <nav class="toc" aria-label="On this page">
+        <div class="toc-inner">
+          <p class="toc-title">On this page</p>
+          <ol>
+            <li><a href="#problem">Problem</a></li>
+            <li><a href="#audit">What the audit found</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#evaluation">Evaluation</a></li>
+            <li><a href="#results">Results</a></li>
+            <li><a href="#explanations">Explanations</a></li>
+            <li><a href="#engineering">Engineering</a></li>
+            <li><a href="#lessons">Lessons learned</a></li>
+          </ol>
+        </div>
+      </nav>
+
+      <article class="prose">
+        <!-- Problem -->
+        <section id="problem" aria-labelledby="h-problem">
+          <h2 id="h-problem"><span class="section-num">01</span>Problem</h2>
+          <p class="lead">The AIFB knowledge graph describes the people, publications, projects and research topics of an institute at KIT. The task is to predict which of four research groups each of 176 labelled researchers belongs to, and to explain why.</p>
+          <p>The four groups are Business Information and Communication Systems, Efficient Algorithms, Knowledge Management and Complexity Management. The standard split is 140 training and 36 test persons, and always guessing the largest group scores 41.7% on the test split.</p>
+          <p>The starting point was a course mini-project pipeline. It flattened the graph into a one-hot table, trained a Gradient Boosting black box (10,000 depth-1 stumps) and a depth-5 decision tree, explained them with SHAP, and reported 86.1% test accuracy.</p>
+        </section>
+
+        <!-- Audit -->
+        <section id="audit" aria-labelledby="h-audit">
+          <h2 id="h-audit"><span class="section-num">02</span>What the audit found</h2>
+          <p>Before improving anything, I checked whether the existing numbers could be trusted. They couldn't.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">Problem</th><th scope="col">Evidence</th><th scope="col">Fix</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Label leakage</th><td>Research groups were still linked to their own members through <em>member</em> and <em>head</em> edges: 79 triples.</td><td>Removed every direct person↔group edge (29,043 → 28,964). Tests fail if any come back.</td></tr>
+                <tr><th scope="row">Memorised identities</th><td>140 of 479 features were person names, and 414 were non-zero for exactly one training person. Without them, Gradient Boosting fell from 86.1% to 72.2%.</td><td>Readable graph features. Values seen for fewer than 2 training persons are dropped inside every fold.</td></tr>
+                <tr><th scope="row">Lossy conversion</th><td>One value kept per subject and predicate: 2,462 of 2,586 publication links were lost, and incoming edges were ignored.</td><td>Features keep every object and use incoming edges.</td></tr>
+                <tr><th scope="row">Top feature misread</th><td><code>phone_</code> meant the phone field was <em>empty</em>, but was read as "has a phone".</td><td>Explicit profile features (<code>has_phone</code>, <code>has_fax</code>, …).</td></tr>
+                <tr><th scope="row">"Fidelity" wasn't fidelity</th><td>The reported 0.75 compared the black box with a tree trained on the true labels.</td><td>A real surrogate trained on the black box's predictions: fidelity 0.833.</td></tr>
+                <tr><th scope="row">Rank agreement misreported</th><td>A Spearman of 0.68 compared different methods than stated.</td><td>All method pairs, three agreement measures.</td></tr>
+                <tr><th scope="row">Thin evaluation</th><td>One 36-person split, no baseline, no interval.</td><td>Majority baseline, Wilson intervals, nested repeated CV.</td></tr>
+                <tr><th scope="row">Notebook-only code</th><td>The repo was 97% Jupyter, and SHAP plots showed "Feature 205" instead of names.</td><td>Tested <code>.py</code> modules, with figures generated from code.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Architecture -->
+        <section id="architecture" aria-labelledby="h-architecture">
+          <h2 id="h-architecture"><span class="section-num">03</span>Architecture</h2>
+          <ol class="flow" aria-label="Pipeline stages">
+            <li>
+              <span class="flow-title">AIFB RDF graph</span>
+              <span class="flow-desc">8,285 nodes and 29,043 triples: persons, publications, projects and research topics.</span>
+            </li>
+            <li>
+              <span class="flow-title">Leakage removal</span>
+              <span class="flow-desc">Every direct person↔group edge is removed (−79 triples). Leakage tests fail the build if any return.</span>
+            </li>
+            <li>
+              <span class="flow-title">Readable graph features</span>
+              <span class="flow-desc">Named <code>family:item</code> in five families (profile, contact, project, topic, coauthor), e.g. <code>topic:semantic web</code> or <code>coauthor:Rudi Studer</code>. Values of a single training person are dropped inside every fold.</span>
+            </li>
+            <li>
+              <span class="flow-title">Models</span>
+              <span class="flow-desc">Logistic regression, a depth-limited decision tree and LightGBM, tuned with grid search on training persons only.</span>
+            </li>
+            <li>
+              <span class="flow-title">Evaluation</span>
+              <span class="flow-desc">Nested repeated cross-validation (5 folds × 3 repeats), Wilson 95% intervals and a majority baseline.</span>
+            </li>
+            <li>
+              <span class="flow-title">Explanations</span>
+              <span class="flow-desc">TreeSHAP per feature, family and class, plus family ablation, a surrogate tree and permutation importance.</span>
+            </li>
+            <li>
+              <span class="flow-title">Output</span>
+              <span class="flow-desc">A plain-language explanation for each person (tree path, probabilities, strongest SHAP reasons) and a Streamlit demo.</span>
+            </li>
+            <li class="is-side">
+              <span class="flow-title">Reference points <span class="flow-tag">comparison</span></span>
+              <span class="flow-desc">A featureless R-GCN (PyTorch Geometric) rebuilt to the original paper's settings, and a second dataset (MUTAG) through a schema-agnostic feature builder.</span>
+            </li>
+          </ol>
+        </section>
+
+        <!-- Evaluation -->
+        <section id="evaluation" aria-labelledby="h-evaluation">
+          <h2 id="h-evaluation"><span class="section-num">04</span>Evaluation</h2>
+          <p>These rules held for every number in the project:</p>
+          <ul>
+            <li>Hyperparameters are tuned by cross-validation on training persons only.</li>
+            <li>The test split is used for final numbers only.</li>
+            <li>Every test accuracy is reported with its 95% Wilson interval, next to the CV mean ± std and the majority baseline.</li>
+            <li>Feature filters are refit inside each fold, so feature selection can't leak.</li>
+          </ul>
+          <div class="callout">
+            <span class="callout-label">Why it mattered</span>
+            <p>The original black box scored 86.1% on the 36-person test split. Repeated cross-validation put it at 75.9% ± 5.5.</p>
+          </div>
+        </section>
+
+        <!-- Results -->
+        <section id="results" aria-labelledby="h-results">
+          <h2 id="h-results"><span class="section-num">05</span>Results</h2>
+          <p>The interpretability trade-off turned out to be a feature problem. With readable graph features, every model improved, and the depth-5 decision tree went from the weakest model to within 3.6 points of LightGBM.</p>
+
+          <figure class="chart" data-chart="dumbbell" data-min="40" data-max="100" data-ticks="40,50,60,70,80,90,100" data-unit="%" data-decimals="1" data-tick-decimals="0" data-ref="41.7" data-ref-label="Majority class 41.7%" data-delta-unit=" pts" data-delta-decimals="1" data-colors="series-muted,series-1">
+            <figcaption>
+              <span class="chart-title">Same models, better features</span>
+              <span class="chart-sub">Nested cross-validation accuracy (5 folds × 3 repeats) on all 176 labelled persons</span>
+            </figcaption>
+            <div class="table-wrap"><table class="data-table">
+              <thead><tr><th scope="col">Model</th><th scope="col" class="num">One-hot table</th><th scope="col" class="num">Graph features</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Logistic regression</th><td class="num">75.0%</td><td class="num">87.3%</td></tr>
+                <tr><th scope="row">Decision tree</th><td class="num">63.4%</td><td class="num">86.2%</td></tr>
+                <tr><th scope="row">LightGBM</th><td class="num">69.7%</td><td class="num">89.8%</td></tr>
+              </tbody>
+            </table></div>
+          </figure>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <caption>Graph features without group paths (two-hop proxies of the label, kept out of the headline). 662 features. Majority baseline 41.7%.</caption>
+              <thead><tr><th scope="col">Model</th><th scope="col" class="num">Nested CV</th><th scope="col" class="num">Test</th><th scope="col" class="num">95% Wilson CI</th><th scope="col" class="num">Macro F1</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Logistic regression</th><td class="num">87.3% ± 4.8</td><td class="num">88.9% (32/36)</td><td class="num">74.7–95.6%</td><td class="num">0.852</td></tr>
+                <tr><th scope="row">Decision tree</th><td class="num">86.2% ± 3.3</td><td class="num">83.3% (30/36)</td><td class="num">68.1–92.1%</td><td class="num">0.775</td></tr>
+                <tr class="is-key"><th scope="row">LightGBM</th><td class="num">89.8% ± 5.5</td><td class="num">91.7% (33/36)</td><td class="num">78.2–97.1%</td><td class="num">0.867</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>What the decision tree learned</h3>
+          <p>The tuned tree reads as six rules. Toggle a researcher's properties and watch which rule decides.</p>
+          <div class="widget" data-widget="tree">
+            <div class="widget-head">
+              <span class="chart-title">Try the decision tree</span>
+              <span class="widget-badge">depth 5 · 86.2% nested CV</span>
+            </div>
+            <div class="widget-body tree">
+              <div class="tree-inputs">
+                <h4>Researcher profile</h4>
+                <label class="switch"><input type="checkbox" data-feature="semantic-web"><span>Topic: semantic web</span></label>
+                <label class="switch"><input type="checkbox" data-feature="schmeck"><span>Co-authored with Hartmut Schmeck</span></label>
+                <label class="switch"><input type="checkbox" data-feature="finance"><span>Topic: computational finance</span></label>
+                <label class="switch"><input type="checkbox" data-feature="studer"><span>Co-authored with Rudi Studer</span></label>
+                <label class="switch"><input type="checkbox" data-feature="evolutionary"><span>Topic: evolutionary algorithms</span></label>
+              </div>
+              <div class="tree-rules">
+                <h4>Rules, checked top to bottom</h4>
+                <ol>
+                  <li class="rule" data-rule><span class="n">1</span><span class="cond">Has the topic <strong>semantic web</strong></span><span class="out">→ Knowledge Management</span></li>
+                  <li class="rule" data-rule><span class="n">2</span><span class="cond">Co-authored with <strong>Hartmut Schmeck</strong></span><span class="out">→ Efficient Algorithms</span></li>
+                  <li class="rule" data-rule><span class="n">3</span><span class="cond">Has the topic <strong>computational finance</strong></span><span class="out">→ Complexity Management</span></li>
+                  <li class="rule" data-rule><span class="n">4</span><span class="cond">Co-authored with <strong>Rudi Studer</strong></span><span class="out">→ Knowledge Management</span></li>
+                  <li class="rule" data-rule><span class="n">5</span><span class="cond">Has the topic <strong>evolutionary algorithms</strong></span><span class="out">→ Efficient Algorithms</span></li>
+                  <li class="rule" data-rule><span class="n">6</span><span class="cond">Otherwise</span><span class="out">→ Business Information and Communication Systems</span></li>
+                </ol>
+                <div class="tree-result" aria-live="polite">
+                  <span>Prediction</span>
+                  <strong data-result-group>Business Information and Communication Systems</strong>
+                  <p data-result-why>Rules 1–5 are all "no", so the tree falls through to its default leaf.</p>
+                </div>
+              </div>
+            </div>
+            <p class="widget-foot">Two small exception branches are left out here. The full tree is in <code>tree_rules_graph.txt</code> in the repository.</p>
+          </div>
+
+          <h3>The price of readability</h3>
+          <p>A featureless graph neural network, rebuilt with the original paper's settings, is the reference point. On the same leakage-free graph it beats LightGBM by 4.5 points and the decision tree by 8.1 points in cross-validation. That is the honest cost of readable features on AIFB.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">Model, leakage-free AIFB graph</th><th scope="col" class="num">CV accuracy</th><th scope="col">Protocol</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Decision tree, graph features</th><td class="num">86.2% ± 3.3</td><td>nested, 5 × 3</td></tr>
+                <tr><th scope="row">LightGBM, graph features</th><td class="num">89.8% ± 5.5</td><td>nested, 5 × 3</td></tr>
+                <tr><th scope="row">R-GCN, featureless</th><td class="num">94.3% ± 3.0</td><td>5-fold</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>The leaky edges don't explain the GNN's score: it reaches 95.5% on the standard graph, 94.3% without member/head edges and 93.8% without any group nodes. On a second dataset, MUTAG (340 molecules), generic features that know nothing about chemistry let all three classical models beat the R-GCN: LightGBM 78.4% vs 71.5%. There, the tree splits on aromatic carbon atoms and ring structures.</p>
+        </section>
+
+        <!-- Explanations -->
+        <section id="explanations" aria-labelledby="h-explanations">
+          <h2 id="h-explanations"><span class="section-num">06</span>Explanations</h2>
+          <p>Every prediction comes with a plain-language explanation: the decision tree's path, LightGBM's strongest SHAP reasons, and which kind of graph information decided it. The Streamlit demo shows this for any of the 36 test persons.</p>
+          <figure class="shot">
+            <div class="shot-bar">streamlit run app/demo.py</div>
+            <div class="shot-img">
+              <img src="../../assets/img/projects/kg-demo.webp" width="1400" height="1230" loading="lazy" decoding="async"
+                   alt="Streamlit demo for one test researcher: the true group and both models' predictions (all Knowledge Management), the decision tree's path, a table of LightGBM's strongest SHAP reasons, and a bar chart of which feature families decided the prediction.">
+            </div>
+            <figcaption>The demo for one test researcher: true group, both predictions, the tree's path, the strongest SHAP reasons and the feature families behind them.</figcaption>
+          </figure>
+          <p>I cross-checked the explanations with four methods. The most useful comparison was SHAP (what the model <em>uses</em>) against family ablation (what it <em>needs</em>): retrain without each feature family and see what accuracy is lost.</p>
+
+          <div class="chart-grid chart-grid--2">
+            <figure class="chart" data-chart="bars" data-labels="above" data-unit="%" data-decimals="1" data-ticks="0,10,20,30,40" data-tick-decimals="0">
+              <figcaption>
+                <span class="chart-title">What the model uses</span>
+                <span class="chart-sub">Share of SHAP attribution by feature family, LightGBM</span>
+              </figcaption>
+              <div class="table-wrap"><table class="data-table">
+                <thead><tr><th scope="col">Family</th><th scope="col" class="num">SHAP share</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">profile</th><td class="num">38.8%</td></tr>
+                  <tr><th scope="row">topic</th><td class="num">33.1%</td></tr>
+                  <tr><th scope="row">coauthor</th><td class="num">21.5%</td></tr>
+                  <tr><th scope="row">contact</th><td class="num">6.2%</td></tr>
+                  <tr><th scope="row">project</th><td class="num">0.4%</td></tr>
+                </tbody>
+              </table></div>
+            </figure>
+            <figure class="chart" data-chart="bars" data-labels="above" data-diverging data-signed data-decimals="1" data-ticks="-6,-4,-2,0,2">
+              <figcaption>
+                <span class="chart-title">What the model needs</span>
+                <span class="chart-sub">Change in nested-CV accuracy (points) when the family is removed</span>
+              </figcaption>
+              <div class="table-wrap"><table class="data-table">
+                <thead><tr><th scope="col">Family</th><th scope="col" class="num">Change when removed</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">profile</th><td class="num">+0.4 pts</td></tr>
+                  <tr><th scope="row">topic</th><td class="num">−0.9 pts</td></tr>
+                  <tr><th scope="row">coauthor</th><td class="num">−5.7 pts</td></tr>
+                  <tr><th scope="row">contact</th><td class="num">−4.0 pts</td></tr>
+                  <tr><th scope="row">project</th><td class="num">0.0 pts</td></tr>
+                </tbody>
+              </table></div>
+            </figure>
+          </div>
+
+          <ul>
+            <li><strong>What the model uses isn't what it needs.</strong> Profile has the largest SHAP share (39%), yet removing it changes accuracy by +0.4 points: topics and co-authors carry the same information.</li>
+            <li><strong>The families it needs</strong> are co-authors (−5.7 points without them) and contact details (−4.0).</li>
+            <li><strong>One shortcut remains:</strong> for Complexity Management, the smallest group, <code>has_photo</code> and <code>has_fax</code> are among the strongest drivers. They reflect how complete a profile is, not research.</li>
+            <li><strong>Methods agree more on meaningful features:</strong> the top-20 overlap between SHAP and permutation importance doubled (Jaccard 0.333 → 0.667), though shared features are still ranked differently (Spearman 0.42). A depth-5 surrogate tree mimics LightGBM with 83.3% fidelity.</li>
+          </ul>
+        </section>
+
+        <!-- Engineering -->
+        <section id="engineering" aria-labelledby="h-engineering">
+          <h2 id="h-engineering"><span class="section-num">07</span>Engineering</h2>
+          <ul>
+            <li><strong>45 unit tests</strong> covering leakage, features, metrics, explanations, prediction and the demo, plus a <strong>5-test model-quality gate</strong>.</li>
+            <li><strong>Leakage tests</strong> fail if any edge links a person directly to a research group.</li>
+            <li><strong>Quality gate:</strong> retrained models must reproduce the published test accuracy within one test person and stay above floors (80% for logistic regression and the tree, 85% for LightGBM, 80% nested CV).</li>
+            <li><strong>CI:</strong> lint → unit tests → quality gate → Docker build → tests inside the image → demo health check.</li>
+            <li><strong>One command</strong> rebuilds every result file and figure (about 8 minutes without the GNN). The README and the report read their numbers from those JSON files.</li>
+            <li><strong>Docker:</strong> <code>python:3.12-slim</code>, non-root user, health check. Fixed seeds, pinned dependencies, ruff-clean code and no notebooks.</li>
+            <li><strong>Streamlit demo:</strong> pick one of the 36 test persons and see the true group, both predictions, the tree path and the SHAP reasons.</li>
+          </ul>
+          <pre><code>python -m src.pipeline          # every stage, ~8 min
+pytest -q -m "not quality"      # unit tests
+pytest -q -m quality            # model-quality gate
+streamlit run app/demo.py       # the demo</code></pre>
+        </section>
+
+        <!-- Lessons -->
+        <section id="lessons" aria-labelledby="h-lessons">
+          <h2 id="h-lessons"><span class="section-num">08</span>Lessons learned</h2>
+          <ul class="lessons">
+            <li>
+              <h3>A test score can flatter</h3>
+              <p>86.1% on 36 people looked strong. Repeated cross-validation said 75.9%. With small data, the protocol matters as much as the model.</p>
+            </li>
+            <li>
+              <h3>Readability was a feature problem</h3>
+              <p>The decision tree didn't need to be replaced. It needed features named in the graph's own terms, and then it went from 63.4% to 86.2%.</p>
+            </li>
+            <li>
+              <h3>What a model uses isn't what it needs</h3>
+              <p>SHAP shares and ablation tell different stories. Using both separated real signal from redundant signal and exposed a remaining shortcut.</p>
+            </li>
+            <li>
+              <h3>Name metrics for what they measure</h3>
+              <p>Two explanation metrics in the original pipeline measured something other than their names. Fixing the definitions came before improving the numbers.</p>
+            </li>
+            <li>
+              <h3>Report the price</h3>
+              <p>A graph neural network is 8.1 points better than the tree. That belongs in the results, next to the interpretability gain.</p>
+            </li>
+          </ul>
+          <p class="muted" style="font-size:0.9rem">Limitations: the 36-person test split gives wide intervals (LightGBM 78.2–97.1%), so CV is the main comparison. The GNN's CV uses 5 folds × 1 repeat for CPU-time reasons.</p>
+          <div class="case-actions">
+            <a class="btn" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
+              <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <nav class="wrap case-pager" aria-label="More projects">
+      <a class="pager-link" href="../llm-context-assistant/"><span>← Previous project</span><strong>LLM-Based System Context Analysis Assistant</strong></a>
+      <a class="pager-link pager-link--next" href="../machine-unlearning/"><span>Next project →</span><strong>Machine Unlearning for Face Recognition</strong></a>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© <span data-year>2026</span> Abhishek Ningappa Walikar</p>
+      <p><a href="../../#contact">Get in touch</a> · <a href="../../">Back to home</a></p>
+    </div>
+  </footer>
+</body>
+</html>

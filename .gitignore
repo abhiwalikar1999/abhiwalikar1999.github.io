@@ -1,0 +1,11 @@
+# Reference material: kept locally, never published
+/*.pdf
+/*.jpg
+/*.jpeg
+/*.png
+/*.heic
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
