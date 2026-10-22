@@ -1,7 +1,9 @@
 // Visit statistics (GoatCounter) and a phone alert (ntfy) for the actions that
 // matter: CV download, live demo, GitHub, LinkedIn and email.
-// Runs only on the live site. Open the site once with #me in the address to
-// exclude your own browser, and with #notme to include it again.
+// Runs only on the live site and keeps everything in memory for the current
+// page: nothing is written to a visitor's browser storage.
+// Open the site once with #me in the address to exclude your own browser
+// (stored on your device only), and with #notme to include it again.
 (() => {
   const CONFIG = {
     liveHosts: ['abhiwalikar1999.github.io'],
@@ -9,24 +11,25 @@
     ntfyTopic: 'aw-XbXvsICZmCHwsLh_sebkuQAc', // subscribe to this topic in the ntfy app
   };
 
-  const get = (s, k) => { try { return s.getItem(k); } catch (e) { return null; } };
-  const set = (s, k, v) => { try { s.setItem(k, v); } catch (e) { /* storage unavailable */ } };
   const params = new URLSearchParams(location.search);
   const test = params.has('aw-test');
 
-  if (location.hash === '#me') set(localStorage, 'aw-skip', '1');
-  if (location.hash === '#notme') { try { localStorage.removeItem('aw-skip'); } catch (e) { /* ignore */ } }
-  if (!test && (get(localStorage, 'aw-skip') === '1' || !CONFIG.liveHosts.includes(location.hostname))) return;
+  // The opt-out flag lives only on the site owner's own devices.
+  try {
+    if (location.hash === '#me') localStorage.setItem('aw-skip', '1');
+    if (location.hash === '#notme') localStorage.removeItem('aw-skip');
+    if (!test && localStorage.getItem('aw-skip') === '1') return;
+  } catch (e) { /* storage unavailable */ }
+  if (!test && !CONFIG.liveHosts.includes(location.hostname)) return;
 
-  // Where this visit came from: a tagged link (?ref=cv) or the referring site.
-  let source = get(sessionStorage, 'aw-src');
-  if (!source) {
-    let host = '';
-    try { host = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) { /* ignore */ }
-    const ref = params.get('ref');
-    source = ref ? `${ref} link` : (host && host !== location.hostname ? host.replace(/^www\./, '') : 'direct');
-    set(sessionStorage, 'aw-src', source);
-  }
+  // Where this page view came from: a tagged link (?ref=cv), another site, or this site.
+  let host = '';
+  try { host = document.referrer ? new URL(document.referrer).hostname : ''; } catch (e) { /* ignore */ }
+  const ref = params.get('ref');
+  const source = ref ? `${ref} link`
+    : host === location.hostname ? 'browsing the site'
+    : host ? host.replace(/^www\./, '')
+    : 'direct';
 
   // Statistics.
   if (CONFIG.goatcounter) {
@@ -42,13 +45,12 @@
     }
   };
 
-  // Phone alert, at most once per action per visit.
+  // Phone alert, at most once per action per page view.
+  const sent = new Set();
   const device = () => `${/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'phone' : 'desktop'} · ${navigator.language || 'unknown language'}`;
   const notify = (key, title, priority, tags) => {
-    if (!CONFIG.ntfyTopic) return;
-    const sent = get(sessionStorage, 'aw-sent') || '';
-    if (sent.split('|').includes(key)) return;
-    set(sessionStorage, 'aw-sent', `${sent}|${key}`);
+    if (!CONFIG.ntfyTopic || sent.has(key)) return;
+    sent.add(key);
     const q = new URLSearchParams({
       title: (test ? '[test] ' : '') + title,
       message: `Page: ${location.pathname}\nFrom: ${source}\nDevice: ${device()}`,
@@ -60,7 +62,6 @@
   };
 
   // A visit through a tagged link (CV, LinkedIn, an application) is worth an alert too.
-  const ref = params.get('ref');
   if (ref) notify('visit', `Portfolio opened from your ${ref} link`, 3, 'eyes');
 
   // [key, alert title, priority, emoji tag]
