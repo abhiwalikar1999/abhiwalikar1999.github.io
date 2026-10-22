@@ -4,7 +4,7 @@ Personal portfolio site: AI/ML engineering projects with problem, architecture,
 evaluation and results.
 
 Plain HTML, CSS and JavaScript. No framework, no build step, no dependencies,
-no cookies, no third-party requests (fonts are self-hosted).
+no cookies. Fonts are self-hosted.
 
 ## Structure
 
@@ -21,6 +21,7 @@ site/                         <- the deployable website (publish this folder)
     js/main.js                theme toggle, menu, project filters, scroll-spy, reveal
     js/charts.js              SVG charts drawn from the <table> inside each chart
     js/widgets.js             LangGraph loop and decision-tree explainers
+    js/insights.js            visit statistics and link-click counts (live site only)
     fonts/                    IBM Plex Sans / Mono (SIL Open Font License)
     img/                      favicon, icon sprite, projects/ (real screenshots, WebP)
     docs/                     CV PDF
