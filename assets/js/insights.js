@@ -7,7 +7,7 @@
 (() => {
   const CONFIG = {
     liveHosts: ['abhiwalikar1999.github.io'],
-    goatcounter: '',                         // GoatCounter site code, e.g. 'abhiwalikar'
+    goatcounter: 'abhiwalikar',              // GoatCounter site code: https://abhiwalikar.goatcounter.com
     ntfyTopic: 'aw-XbXvsICZmCHwsLh_sebkuQAc', // subscribe to this topic in the ntfy app
   };
 
