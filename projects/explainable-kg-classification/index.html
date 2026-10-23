@@ -345,7 +345,7 @@ pytest -q -m "not quality"      # unit tests
 pytest -q -m quality            # model-quality gate
 streamlit run app/demo.py       # the demo</code></pre>
           <h3>Choosing where to host the demo</h3>
-          <p>I compared five options on startup time, memory, cost and rules before picking one.</p>
+          <p>I compared four options on startup time, memory and cost before picking one.</p>
           <div class="table-wrap">
             <table class="data-table">
               <thead><tr><th scope="col">Platform</th><th scope="col">Outcome</th><th scope="col">Measured reason</th></tr></thead>
@@ -353,7 +353,6 @@ streamlit run app/demo.py       # the demo</code></pre>
                 <tr><th scope="row">Hugging Face Spaces (Docker)</th><td>Not possible for free</td><td>Creating the Space returned HTTP 402. Docker Spaces on free hardware now need a paid plan.</td></tr>
                 <tr><th scope="row">Render (free tier)</th><td>Rejected</td><td>0.1 CPU and 512 MB: fitting the models took 94 s instead of 12 s and peaked at 418 of 512 MB.</td></tr>
                 <tr><th scope="row">Streamlit Community Cloud</th><td>Tried, replaced</td><td>A minimal CPU share made startup take about 178 s, which led to the precomputed demo.</td></tr>
-                <tr><th scope="row">University IT services</th><td>Not used</td><td>The rules of use allow research, teaching and study purposes only, and virtual servers are for faculties and chairs.</td></tr>
                 <tr class="is-key"><th scope="row">Azure Container Apps</th><td>Chosen</td><td>Free without a credit card (student offer), hard spending limit, scale to zero, and it runs the existing Docker image.</td></tr>
               </tbody>
             </table>
