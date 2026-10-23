@@ -67,7 +67,8 @@
   // [key, alert title, priority, emoji tag]
   const classify = (href) => {
     if (/Walikar_CV\.pdf/i.test(href)) return ['cv', 'CV downloaded', 4, 'page_facing_up'];
-    if (/context-graph-assistant\.onrender\.com/i.test(href)) return ['demo', 'Live demo opened', 4, 'rocket'];
+    if (/context-graph-assistant\./i.test(href)) return ['demo-llm', 'LLM live demo opened', 4, 'rocket'];
+    if (/explainable-kg-classification\.[^/]*azurecontainerapps\.io/i.test(href)) return ['demo-kg', 'KG live demo opened', 4, 'rocket'];
     const gh = href.match(/github\.com\/abhiwalikar1999\/?([^/?#]*)/i);
     if (gh) return [`github-${gh[1] || 'profile'}`, gh[1] ? `GitHub repo opened: ${gh[1]}` : 'GitHub profile opened', 3, 'computer'];
     if (/linkedin\.com\/in\//i.test(href)) return ['linkedin', 'LinkedIn profile opened', 4, 'briefcase'];

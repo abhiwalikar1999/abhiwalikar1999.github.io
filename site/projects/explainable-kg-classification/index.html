@@ -67,13 +67,16 @@
         <div><dt>Role</dt><dd>Audit and rebuild of a course mini-project pipeline</dd></div>
         <div><dt>Timeline</dt><dd>04/2026 – 10/2026</dd></div>
         <div><dt>Data</dt><dd>AIFB knowledge graph: 8,285 nodes, 29,043 RDF triples, 176 labelled persons</dd></div>
-        <div><dt>Stack</dt><dd>Python · LightGBM · scikit-learn · SHAP · PyTorch Geometric · Streamlit · Docker</dd></div>
+        <div><dt>Stack</dt><dd>Python · LightGBM · scikit-learn · SHAP · PyTorch Geometric · Streamlit · Docker · Azure Container Apps</dd></div>
       </dl>
 
       <div class="case-actions">
-        <a class="btn" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
+        <a class="btn" href="https://explainable-kg-classification.purplerock-f0a543f4.francecentral.azurecontainerapps.io" target="_blank" rel="noopener">Try the live demo
+          <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
+        <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
           <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
       </div>
+      <p class="case-note">The demo runs on Azure Container Apps and scales to zero when nobody uses it, so the first visit after a quiet spell takes about 10 seconds.</p>
 
       <ul class="metrics case-metrics" aria-label="Key results">
         <li class="metric"><span class="metric-value">89.8%</span><span class="metric-label">Nested-CV accuracy, LightGBM (91.7% on test)</span></li>
@@ -160,7 +163,7 @@
             </li>
             <li>
               <span class="flow-title">Output</span>
-              <span class="flow-desc">A plain-language explanation for each person (tree path, probabilities, strongest SHAP reasons) and a Streamlit demo.</span>
+              <span class="flow-desc">A plain-language explanation for each person (tree path, probabilities, strongest SHAP reasons) and a live Streamlit demo.</span>
             </li>
             <li class="is-side">
               <span class="flow-title">Reference points <span class="flow-tag">comparison</span></span>
@@ -271,9 +274,9 @@
         <!-- Explanations -->
         <section id="explanations" aria-labelledby="h-explanations">
           <h2 id="h-explanations"><span class="section-num">06</span>Explanations</h2>
-          <p>Every prediction comes with a plain-language explanation: the decision tree's path, LightGBM's strongest SHAP reasons, and which kind of graph information decided it. The Streamlit demo shows this for any of the 36 test persons.</p>
+          <p>Every prediction comes with a plain-language explanation: the decision tree's path, LightGBM's strongest SHAP reasons, and which kind of graph information decided it. The <a href="https://explainable-kg-classification.purplerock-f0a543f4.francecentral.azurecontainerapps.io" target="_blank" rel="noopener">live demo</a> shows this for any of the 36 test persons.</p>
           <figure class="shot">
-            <div class="shot-bar">streamlit run app/demo.py</div>
+            <div class="shot-bar">explainable-kg-classification.purplerock-f0a543f4.francecentral.azurecontainerapps.io</div>
             <div class="shot-img">
               <img src="../../assets/img/projects/kg-demo.webp" width="1400" height="1230" loading="lazy" decoding="async"
                    alt="Streamlit demo for one test researcher: the true group and both models' predictions (all Knowledge Management), the decision tree's path, a table of LightGBM's strongest SHAP reasons, and a bar chart of which feature families decided the prediction.">
@@ -332,15 +335,29 @@
             <li><strong>45 unit tests</strong> covering leakage, features, metrics, explanations, prediction and the demo, plus a <strong>5-test model-quality gate</strong>.</li>
             <li><strong>Leakage tests</strong> fail if any edge links a person directly to a research group.</li>
             <li><strong>Quality gate:</strong> retrained models must reproduce the published test accuracy within one test person and stay above floors (80% for logistic regression and the tree, 85% for LightGBM, 80% nested CV).</li>
-            <li><strong>CI:</strong> lint → unit tests → quality gate → Docker build → tests inside the image → demo health check.</li>
+            <li><strong>CI:</strong> lint → unit tests → quality gate → Docker build → tests inside the image → demo health check. In parallel, CI builds the demo image, checks that it serves and publishes it to GitHub Container Registry.</li>
             <li><strong>One command</strong> rebuilds every result file and figure (about 8 minutes without the GNN). The README and the report read their numbers from those JSON files.</li>
             <li><strong>Docker:</strong> <code>python:3.12-slim</code>, non-root user, health check. Fixed seeds, pinned dependencies, ruff-clean code and no notebooks.</li>
-            <li><strong>Streamlit demo:</strong> pick one of the 36 test persons and see the true group, both predictions, the tree path and the SHAP reasons.</li>
+            <li><strong>Live demo:</strong> a Streamlit app on Azure Container Apps that scales to zero and uses about 143 MiB, at no cost under a spending-limited student subscription. Explanations are precomputed by the pipeline, which cut startup on a minimal CPU share from about 178 s to 39 s and the image from 1.52 GB to 783 MB.</li>
           </ul>
           <pre><code>python -m src.pipeline          # every stage, ~8 min
 pytest -q -m "not quality"      # unit tests
 pytest -q -m quality            # model-quality gate
 streamlit run app/demo.py       # the demo</code></pre>
+          <h3>Choosing where to host the demo</h3>
+          <p>I compared five options on startup time, memory, cost and rules before picking one.</p>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th scope="col">Platform</th><th scope="col">Outcome</th><th scope="col">Measured reason</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Hugging Face Spaces (Docker)</th><td>Not possible for free</td><td>Creating the Space returned HTTP 402. Docker Spaces on free hardware now need a paid plan.</td></tr>
+                <tr><th scope="row">Render (free tier)</th><td>Rejected</td><td>0.1 CPU and 512 MB: fitting the models took 94 s instead of 12 s and peaked at 418 of 512 MB.</td></tr>
+                <tr><th scope="row">Streamlit Community Cloud</th><td>Tried, replaced</td><td>A minimal CPU share made startup take about 178 s, which led to the precomputed demo.</td></tr>
+                <tr><th scope="row">University IT services</th><td>Not used</td><td>The rules of use allow research, teaching and study purposes only, and virtual servers are for faculties and chairs.</td></tr>
+                <tr class="is-key"><th scope="row">Azure Container Apps</th><td>Chosen</td><td>Free without a credit card (student offer), hard spending limit, scale to zero, and it runs the existing Docker image.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </section>
 
         <!-- Lessons -->
@@ -364,13 +381,19 @@ streamlit run app/demo.py       # the demo</code></pre>
               <p>Two explanation metrics in the original pipeline measured something other than their names. Fixing the definitions came before improving the numbers.</p>
             </li>
             <li>
+              <h3>Choose infrastructure by measurement</h3>
+              <p>Startup time and memory decided the hosting, not habit. Precomputing the explanations turned a 178-second start into a free, fast demo.</p>
+            </li>
+            <li>
               <h3>Report the price</h3>
               <p>A graph neural network is 8.1 points better than the tree. That belongs in the results, next to the interpretability gain.</p>
             </li>
           </ul>
-          <p class="muted" style="font-size:0.9rem">Limitations: the 36-person test split gives wide intervals (LightGBM 78.2–97.1%), so CV is the main comparison. The GNN's CV uses 5 folds × 1 repeat for CPU-time reasons.</p>
+          <p class="muted" style="font-size:0.9rem">Limitations: the 36-person test split gives wide intervals (LightGBM 78.2–97.1%), so CV is the main comparison. The GNN's CV uses 5 folds × 1 repeat for CPU-time reasons. The demo shows precomputed results for the 36 test persons and doesn't score new people.</p>
           <div class="case-actions">
-            <a class="btn" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
+            <a class="btn" href="https://explainable-kg-classification.purplerock-f0a543f4.francecentral.azurecontainerapps.io" target="_blank" rel="noopener">Try the live demo
+              <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
+            <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/explainable-kg-classification" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
           </div>
         </section>

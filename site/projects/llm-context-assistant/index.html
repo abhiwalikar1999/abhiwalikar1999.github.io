@@ -67,22 +67,22 @@
         <div><dt>Role</dt><dd>Started as a 3-person course project, then I extended it on my own in 9 measured phases</dd></div>
         <div><dt>Timeline</dt><dd>12/2025 – 03/2026</dd></div>
         <div><dt>Context</dt><dd>Universität Paderborn, Data-Driven Engineering</dd></div>
-        <div><dt>Stack</dt><dd>Python · OpenAI SDK · Pydantic v2 · LangGraph · pytest · Docker · GitHub Actions · Render</dd></div>
+        <div><dt>Stack</dt><dd>Python · OpenAI SDK · Pydantic v2 · LangGraph · pytest · Docker · GitHub Actions · Azure Container Apps</dd></div>
       </dl>
 
       <div class="case-actions">
-        <a class="btn" href="https://context-graph-assistant.onrender.com" target="_blank" rel="noopener">Try the live demo
+        <a class="btn" href="https://context-graph-assistant.kindforest-49e58022.francecentral.azurecontainerapps.io" target="_blank" rel="noopener">Try the live demo
           <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
         <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/LLM-Based-System-Context-Analysis-Assistant" target="_blank" rel="noopener">
           <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
       </div>
-      <p class="case-note">The demo is hosted on Render. If it has been idle, the first load takes about 20–30 seconds while it wakes up.</p>
+      <p class="case-note">The demo runs on Azure Container Apps and scales to zero when nobody uses it, so the first load after a quiet spell takes a few seconds.</p>
 
       <ul class="metrics case-metrics" aria-label="Key results">
         <li class="metric"><span class="metric-value">0.88</span><span class="metric-label">Entity F1 (precision 0.96, recall 0.82)</span></li>
         <li class="metric"><span class="metric-value">0.82</span><span class="metric-label">Relationship F1 (precision 0.81, recall 0.84)</span></li>
         <li class="metric"><span class="metric-value">100%</span><span class="metric-label">Extracted items traced to a source sentence</span></li>
-        <li class="metric"><span class="metric-value">69</span><span class="metric-label">Tests in about a second, zero network calls</span></li>
+        <li class="metric"><span class="metric-value">69</span><span class="metric-label">Tests in about 2 s, zero network calls</span></li>
       </ul>
     </header>
 
@@ -155,7 +155,7 @@
           </ol>
           <p>The web app is served by Python's standard-library <code>http.server</code>. There's no web framework, by design: the app needs a handful of routes, not a framework's worth of dependencies.</p>
           <figure class="shot">
-            <div class="shot-bar">context-graph-assistant.onrender.com/example_output/risk_overlay.html</div>
+            <div class="shot-bar">context-graph-assistant.kindforest-49e58022.francecentral.azurecontainerapps.io/example_output/risk_overlay.html</div>
             <div class="shot-img shot-img--crop">
               <img src="../../assets/img/projects/llm-risk-overlay.webp" width="940" height="1110" loading="lazy" decoding="async"
                    alt="Risk-traceability graph from the live demo: actors in green, internal components in blue, external systems in red and risks in orange, with arrows linking each risk to the components it affects.">
@@ -266,6 +266,16 @@
                 <ul>
                   <li>Rewrote the README as a five-minute read: problem, approach, results, how to run it.</li>
                   <li>Kept the full methodology and the honest results, including corrected mistakes.</li>
+                </ul>
+              </div>
+            </details>
+            <details>
+              <summary><span class="ph">Later</span>After launch: fixes and a second deployment<svg class="icon icon--stroke chev" aria-hidden="true"><use href="../../assets/img/icons.svg#i-chevron"/></svg></summary>
+              <div class="phase-body">
+                <ul>
+                  <li>Fixed near-duplicate nodes on the live demo ("doctor" vs "doctors", "EHR" vs "EHR system"). The hand-written architecture skeleton used labels that didn't exactly match what the LLM extracted.</li>
+                  <li>Limited the hospital-specific enrichment layer to its reference scenario with a tested detection gate, so other domains no longer get hospital nodes. The test suite grew from 65 to 69 tests.</li>
+                  <li>Deployed to Azure Container Apps with scale to zero. I measured the container's footprint first and used the free GitHub Container Registry instead of Azure's paid one, so hosting costs nothing within the free monthly grant.</li>
                 </ul>
               </div>
             </details>
@@ -427,9 +437,9 @@
         <section id="engineering" aria-labelledby="h-engineering">
           <h2 id="h-engineering"><span class="section-num">06</span>Engineering</h2>
           <ul>
-            <li><strong>69 pytest tests</strong> across 5 files: deduplication, graph canonicalisation, scoring functions, schema validation, agentic-loop routing and the scenario gate of the enrichment layer. The suite runs in about a second with zero network calls.</li>
+            <li><strong>69 pytest tests</strong> across 5 files: deduplication, graph canonicalisation, scoring functions, schema validation, agentic-loop routing and the scenario gate of the enrichment layer. The suite runs in about two seconds with zero network calls.</li>
             <li><strong>CI/CD:</strong> two GitHub Actions jobs on every push. One runs the tests, and the other builds the Docker image and smoke-tests the running container.</li>
-            <li><strong>Deployment:</strong> Render, defined as code in a <code>render.yaml</code> Blueprint, with host and port taken from environment variables.</li>
+            <li><strong>Deployment:</strong> Azure Container Apps with scale to zero, running the Docker image from the free GitHub Container Registry. Before deploying, I measured the container (about 59 MiB of RAM and almost no CPU when idle). Avoiding Azure's paid registry keeps hosting at $0 within the free monthly grant. The first deployment, on Render via a <code>render.yaml</code> Blueprint, came before this.</li>
             <li><strong>Reproducibility:</strong> every dependency pinned to the exact tested version.</li>
             <li><strong>Fixes along the way:</strong> a custom multipart parser after Python 3.13 removed <code>cgi</code>, and a double-HTTP-response bug that corrupted responses when the LLM call failed.</li>
           </ul>
@@ -465,7 +475,7 @@
             </li>
           </ul>
           <div class="case-actions">
-            <a class="btn" href="https://context-graph-assistant.onrender.com" target="_blank" rel="noopener">Try the live demo
+            <a class="btn" href="https://context-graph-assistant.kindforest-49e58022.francecentral.azurecontainerapps.io" target="_blank" rel="noopener">Try the live demo
               <svg class="icon icon--stroke" aria-hidden="true"><use href="../../assets/img/icons.svg#i-arrow-up-right"/></svg></a>
             <a class="btn btn--ghost" href="https://github.com/abhiwalikar1999/LLM-Based-System-Context-Analysis-Assistant" target="_blank" rel="noopener">
               <svg class="icon" aria-hidden="true"><use href="../../assets/img/icons.svg#i-github"/></svg>Source on GitHub</a>
